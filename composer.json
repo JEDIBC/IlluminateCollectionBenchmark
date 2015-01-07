@@ -1,0 +1,16 @@
+{
+    "name"             : "JEDIBC/IlluminateCollectionBenchmark",
+    "description"      : "Benchmarking Illuminate/Support Collection",
+    "minimum-stability": "dev",
+    "license"          : "MIT",
+    "authors"          : [
+        {
+            "name" : "JEDI_BC",
+            "email": "bruno@chalopin.fr"
+        }
+    ],
+    "require"          : {
+        "symfony/stopwatch" : "2.7.x-dev",
+        "illuminate/support": "v4.2.16"
+    }
+}
