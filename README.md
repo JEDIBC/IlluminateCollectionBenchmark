@@ -14,9 +14,14 @@ php benchmark.php
 ```
 => CLASSIC
 User has score of 54
-10000 iterations in 199ms : average = 0.0199ms
+10000 iterations in 197ms : average = 0.0197ms
+
+=> ARRAY_*
+User has score of 54
+10000 iterations in 869ms: average = 0.0869ms
 
 => FUNCTIONAL
 User has score of 54
-10000 iterations in 1936ms: average = 0.1936ms
+10000 iterations in 1875ms: average = 0.1875ms
+
 ```

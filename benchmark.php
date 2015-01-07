@@ -5,16 +5,23 @@ use Symfony\Component\Stopwatch\Stopwatch;
 require_once 'vendor/autoload.php';
 
 $iterationCount = 10000;
-$result         = json_decode(file_get_contents('fabpot.json'), true);
+$events         = json_decode(file_get_contents('fabpot.json'), true);
+$scores         = [
+    'PushEvent'          => 5,
+    'CreateEvent'        => 4,
+    'IssuesEvent'        => 3,
+    'CommitCommentEvent' => 2
+];
+
+/*************************************************************/
 
 echo "=> CLASSIC\n";
-
 $stopWatch = new Stopwatch();
 $stopWatch->start('classic');
 for ($i = 0; $i < $iterationCount; $i++) {
     $types = [];
 
-    foreach ($result as $event) {
+    foreach ($events as $event) {
         $types[] = $event['type'];
     }
 
@@ -46,24 +53,40 @@ $average = $event->getDuration() / $iterationCount;
 echo "User has score of {$user_score}\n";
 echo "{$iterationCount} iterations in {$event->getDuration()}ms : average = {$average}ms\n\n";
 
+/*************************************************************/
+
+echo "=> ARRAY_*\n";
+$stopWatch = new Stopwatch();
+$stopWatch->start('array');
+for ($i = 0; $i < $iterationCount; $i++) {
+    $user_score = array_sum(
+        array_map(
+            function ($event) use ($scores) {
+                $type = $event['type'];
+
+                return isset($scores[$type]) ? $scores[$type] : 1;
+            },
+            $events
+        )
+    );
+}
+$event = $stopWatch->stop('array');
+
+$average = $event->getDuration() / $iterationCount;
+echo "User has score of {$user_score}\n";
+echo "{$iterationCount} iterations in {$event->getDuration()}ms: average = {$average}ms\n\n";
+
+/*************************************************************/
+
 echo "=> FUNCTIONAL\n";
 $stopWatch = new Stopwatch();
 $stopWatch->start('functional');
 for ($i = 0; $i < $iterationCount; $i++) {
-    $events = new Collection($result);
-
-    $scores = new Collection(
-        [
-            'PushEvent'          => 5,
-            'CreateEvent'        => 4,
-            'IssuesEvent'        => 3,
-            'CommitCommentEvent' => 2
-        ]
-    );
-
-    $user_score = $events->sum(
-        function ($event) use ($scores) {
-            return $scores->get($event['type'], 1);
+    $eventsCollection = new Collection($events);
+    $scoresCollection = new Collection($scores);
+    $user_score       = $eventsCollection->sum(
+        function ($event) use ($scoresCollection) {
+            return $scoresCollection->get($event['type'], 1);
         }
     );
 }
